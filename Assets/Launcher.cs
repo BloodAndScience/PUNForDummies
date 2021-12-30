@@ -19,6 +19,7 @@ namespace Com.MyCompany.MyGame
         #region Private Fields
  
         private string gameVersion = "1";
+        bool _isConnecting;
 
 
         #endregion
@@ -53,9 +54,10 @@ namespace Com.MyCompany.MyGame
             }
             else
             {
-                PhotonNetwork.ConnectUsingSettings();
+                _isConnecting = PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
+
         }
         #endregion
 
@@ -67,12 +69,19 @@ namespace Com.MyCompany.MyGame
     {
         Debug.Log("PUN Basics Tutorial/Launcher: OnConnectedToMaster() was called by PUN");
 
-        PhotonNetwork.JoinRandomRoom();
+        if (_isConnecting)
+        {
+            PhotonNetwork.JoinRandomRoom();
+            _isConnecting = false;
+        }
     }
 
     public override void OnJoinedRoom()
     {
         Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+    // #Critical
+    // Load the Room Level.
+    PhotonNetwork.LoadLevel("Main");
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
